@@ -187,6 +187,7 @@ def upload_video(video_file, cover_file, _config, detail):
     try:
         data = buf[-2]
         data = data.decode()
+        print("原始数据：", data)
         data = data.replace('Some(Object', '')
         data = re.sub(r'\)\]', '}', data)
         data = json.loads(data)
