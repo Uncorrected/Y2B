@@ -198,14 +198,17 @@ def upload_video(video_file, cover_file, _config, detail):
     try:
         data = buf[-2]
         data = data.decode()
-        print("原始数据：", data)
+        # 更严格的数据清理
+        data = re.sub(r'\x1b\[[^]]+\]', '', data)  # 去除颜色和格式控制字符
+        data = data.strip()  # 去除前后的空白
+        print("清理后的数据：", data)  # 新增这一行进行调试
         data = data.replace('Some(Object', '')
         data = re.sub(r'\)\]', '}', data)
         data = json.loads(data)
         print("Extracted data:", data)
     except Exception as e:
-        logging.error(f"输出结果错误，详细信息: {e}")  # 更详细的错误日志
-        logging.error(f"原始输出数据: {buf}")  # 记录原始的输出数据
+        logging.error(f"输出结果错误，详细信息: {e}")
+        logging.error(f"原始输出数据: {buf}")
         raise e
     logging.debug(f'上传完成，返回：{data}')
     return data
