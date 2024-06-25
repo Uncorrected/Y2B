@@ -204,7 +204,8 @@ def upload_video(video_file, cover_file, _config, detail):
         data = json.loads(data)
         print("Extracted data:", data)
     except Exception as e:
-        logging.error(f"输出结果错误:{buf}")
+        logging.error(f"输出结果错误，详细信息: {e}")  # 更详细的错误日志
+        logging.error(f"原始输出数据: {buf}")  # 记录原始的输出数据
         raise e
     logging.debug(f'上传完成，返回：{data}')
     return data
@@ -252,7 +253,7 @@ def upload_process(gist_id, token):
             update_gist(gist_id, token, COOKIE_FILE, json.loads(data))
         os.remove("cookies.json")
     except Exception as e:
-        logging.error(f"上传处理过程中出错: {e}")
+        logging.error(f"上传处理过程中出错，详细信息: {e}")  # 更详细的错误日志
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
