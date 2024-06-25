@@ -200,6 +200,7 @@ def upload_video(video_file, cover_file, _config, detail):
         data = data.decode()
         # 更严格的数据清理
         data = re.sub(r'\x1b\[[^]]+\]', '', data)  # 去除颜色和格式控制字符
+        data = re.sub(r'\s+', ', data)  # 压缩多余的空格
         data = data.strip()  # 去除前后的空白
         print("清理后的数据：", data)  # 新增这一行进行调试
         data = data.replace('Some(Object', '')
