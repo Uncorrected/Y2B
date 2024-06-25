@@ -188,6 +188,8 @@ def upload_video(video_file, cover_file, _config, detail):
         data = buf[-2]
         data = data.decode()
         data = re.findall("({.*})", data)[0]
+        data = re.sub(r'([\w_]+):', r'"\1":', data)
+        data = re.findall("({.*})", data)[0]
         print("Extracted data:", data)
     except Exception as e:
         logging.error(f"输出结果错误:{buf}")
