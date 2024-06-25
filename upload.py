@@ -187,7 +187,6 @@ def upload_video(video_file, cover_file, _config, detail):
     try:
         data = buf[-2]
         data = data.decode()
-        data = re.findall("({.*})", data)[0]
         data = re.sub(r'"data": Some\(Object ({.*})\)', r'"data": {"aid": \1["aid"], "bvid": \1["bvid"]}', data)
         data = re.sub(r'([\w_]+):', r'"\1":', data)
         data = re.findall("({.*})", data)[0]
