@@ -188,6 +188,7 @@ def upload_video(video_file, cover_file, _config, detail):
         data = buf[-2]
         data = data.decode()
         data = re.findall("({.*})", data)[0]
+        data = re.sub(r'"data": Some\(Object ({.*})\)', r'"data": \1', data)
         data = re.sub(r'([\w_]+):', r'"\1":', data)
         data = re.findall("({.*})", data)[0]
         print("Extracted data:", data)
