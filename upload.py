@@ -195,6 +195,8 @@ def upload_video(video_file, cover_file, _config, detail):
         match = re.search(r'ResponseData\s*{(.*)}', output)
         if match:
             data_str = '{' + match.group(1) + '}'
+            # 对提取的数据进行规范化处理，将所有键都用双引号括起来
+            data_str = re.sub(r'([^\s:]+):', r'"\1":', data_str)
             data = json.loads(data_str)  # 尝试解析 JSON
             print("Extracted data:", data)
         else:
