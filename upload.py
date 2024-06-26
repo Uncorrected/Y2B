@@ -192,24 +192,18 @@ def upload_video(video_file, cover_file, _config, detail):
     p.wait()
     if p.returncode!= 0:
         raise Exception(p.stdout.read())
-    buf = p.stdout.read().splitlines(keepends=False)
-    if len(buf) < 2:
-        raise Exception(buf)
+    output = p.stdout.read().decode('utf-8')  # 明确以 UTF-8 解码
+    lines = output.splitlines()
+    if len(lines) < 2:
+        raise Exception(output)
     try:
-        data = buf[-2]
-        data = data.decode()
-        # 更严格的数据清理
-        data = re.sub(r'\x1b\[[^]]+\]', '', data)  # 去除颜色和格式控制字符
-        data = re.sub(r'\s+', '', data)  # 压缩多余的空格
-        data = data.strip()  # 去除前后的空白
-        print("清理后的数据:", data)  # 打印清理后的数据
-        data = data.replace('Some(Object', '')
-        data = re.sub(r'\)\]', '}', data)
-        data = json.loads(data)
+        data_line = lines[-2]  # 提取倒数第二行
+        data_line = re.sub(r'\x1b\[[^]]+\]', '', data_line)  # 去除颜色和格式控制字符
+        data_line = data_line.strip()  # 去除前后的空白
+        data = json.loads(data_line)  # 尝试解析 JSON
         print("Extracted data:", data)
-    except Exception as e:
-        logging.error(f"输出结果错误，详细信息: {e}")
-        logging.error(f"原始输出数据: {buf}")
+    except json.JSONDecodeError as e:
+        logging.error(f"无法解析为 JSON: {data_line}")
         raise e
     logging.debug(f'上传完成，返回：{data}')
     return data
