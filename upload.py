@@ -191,16 +191,17 @@ def upload_video(video_file, cover_file, _config, detail):
         raise Exception(p.stdout.read())
     output = p.stdout.read().decode('utf-8')  # 明确以 UTF-8 解码
     try:
-        # 直接查找并提取以 "ResponseData" 开头的部分
-        match = re.search(r'ResponseData\s*{(.*)}', output)
-        if match:
-            data_str = '{' + match.group(1) + '}'
-            # 对提取的数据进行规范化处理，将所有键都用双引号括起来
-            data_str = re.sub(r'([^\s:]+):', r'"\1":', data_str)
-            data = json.loads(data_str)  # 尝试解析 JSON
-            print("Extracted data:", data)
-        else:
-            raise Exception("未找到有效的 ResponseData 部分")
+        # 先尝试提取所有可能的 JSON 字符串
+        json_strs = re.findall(r'({.*?})', output)
+        for json_str in json_strs:
+            try:
+                data = json.loads(json_str)
+                if 'ResponseData' in data:
+                    print("Extracted data:", data)
+                    return data
+            except json.JSONDecodeError:
+                pass
+        raise Exception("未找到有效的包含 ResponseData 的 JSON 部分")
     except json.JSONDecodeError as e:
         logging.error(f"无法解析为 JSON: {output}")
         raise e
