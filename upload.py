@@ -190,6 +190,7 @@ def upload_video(video_file, cover_file, _config, detail):
     if p.returncode!= 0:
         raise Exception(p.stdout.read())
     output = p.stdout.read().decode('utf-8')  # 明确以 UTF-8 解码
+    logging.debug(f"biliup 完整输出: {output}")  # 新增：打印完整输出
     try:
         # 先尝试提取所有可能的 JSON 字符串
         json_strs = re.findall(r'({.*?})', output)
