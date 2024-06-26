@@ -146,6 +146,11 @@ def download_video(url, out, format):
         logging.error("未知错误:" + out)
         raise e
 
+def download_cover(url, out):
+    res = requests.get(url, verify=VERIFY).content
+    with open(out, "wb") as tmp:
+        tmp.write(res)
+
 def upload_video(video_file, cover_file, _config, detail):
     title = detail['title']
     if len(title) > 80:
