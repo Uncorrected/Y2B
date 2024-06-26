@@ -146,14 +146,6 @@ def download_video(url, out, format):
         logging.error("未知错误:" + out)
         raise e
 
-def download_cover(url, out):
-    try:
-        res = requests.get(url, verify=VERIFY).content
-        with open(out, "wb") as tmp:
-            tmp.write(res)
-    except requests.exceptions.RequestException as e:
-        logging.error(f"下载封面时出错: {e}")
-
 def upload_video(video_file, cover_file, _config, detail):
     title = detail['title']
     if len(title) > 80:
@@ -200,6 +192,8 @@ def upload_video(video_file, cover_file, _config, detail):
         data_line = lines[-2]  # 提取倒数第二行
         data_line = re.sub(r'\x1b\[[^]]+\]', '', data_line)  # 去除颜色和格式控制字符
         data_line = data_line.strip()  # 去除前后的空白
+        # 尝试先去除开头的时间戳和 INFO 部分
+        data_line = re.sub(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}  INFO ', '', data_line)
         data = json.loads(data_line)  # 尝试解析 JSON
         print("Extracted data:", data)
     except json.JSONDecodeError as e:
