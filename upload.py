@@ -190,19 +190,17 @@ def upload_video(video_file, cover_file, _config, detail):
     if p.returncode!= 0:
         raise Exception(p.stdout.read())
     output = p.stdout.read().decode('utf-8')  # 明确以 UTF-8 解码
-    lines = output.splitlines()
-    if len(lines) < 2:
-        raise Exception(output)
     try:
-        data_line = lines[-2]  # 提取倒数第二行
-        data_line = re.sub(r'\x1b\[[^]]+\]', '', data_line)  # 去除颜色和格式控制字符
-        data_line = data_line.strip()  # 去除前后的空白
-        # 尝试先去除开头的时间戳和 INFO 部分
-        data_line = re.sub(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}  INFO ', '', data_line)
-        data = json.loads(data_line)  # 尝试解析 JSON
-        print("Extracted data:", data)
+        # 直接查找并提取以 "ResponseData" 开头的部分
+        match = re.search(r'ResponseData\s*{(.*)}', output)
+        if match:
+            data_str = '{' + match.group(1) + '}'
+            data = json.loads(data_str)  # 尝试解析 JSON
+            print("Extracted data:", data)
+        else:
+            raise Exception("未找到有效的 ResponseData 部分")
     except json.JSONDecodeError as e:
-        logging.error(f"无法解析为 JSON: {data_line}")
+        logging.error(f"无法解析为 JSON: {output}")
         raise e
     logging.debug(f'上传完成，返回：{data}')
     return data
